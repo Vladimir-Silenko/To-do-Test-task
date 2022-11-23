@@ -3,7 +3,7 @@ const HeaderBar = styled.div`
 width:100%;
 height:60px;
 display:flex;
-flex-direction:column;
+justify-content:space-between;
 align-items:center;
 background:rgb(166, 188, 254);
 color:#fff;

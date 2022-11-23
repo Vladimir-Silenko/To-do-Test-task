@@ -1,53 +1,46 @@
 
 import dayjs from "dayjs"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import styled from "styled-components"
-import { ActionBtn } from "../ActionBtn"
-import { TextArea, DateWithTime } from "../TextArea"
+import { AddToDo } from "../AddToDo/AddToDo"
+import { ActionBtn } from "../styled/ActionBtn"
+import { ToDoItem, ToDoMain, Container, BtnContainer } from "../styled/Divs"
+import { TextArea, DateWithTime, } from "../styled/Inputs"
+import { collection, getDocs, doc, deleteDoc, query } from "firebase/firestore";
+import { Context } from "../.."
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useEffect } from "react"
+
 const Time = styled.span`
 color:${item => item.deadline < Date.now() ? 'red' : 'BLUE'};
 `
-const ToDoMain = styled.div`
-padding:10px;
-text-align:left;
-max-width:250px;
-`
-const Container = styled.div`
-width:100%;
-display:flex;
-flex-direction:column;
-align-items:center;
-padding-top:20px;
-`
-const ToDoItem = styled.div`
-width: 400px;
-height: 110px;
-padding:5px;
-background:${item => item.status ? 'rgb(188, 250, 185)' : 'lightgrey'};
-margin: 5px;
-border-radius:10px;
-display: grid;
-grid-template-rows: 1fr 1fr;
-grid-template-columns: 3fr 1fr;
-grid-template-areas:
-'header  buttons'
-'main  buttons'
-;
-`
-const BtnContainer = styled.div`
-    grid-area:buttons;
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    justify-content:space-around;
-`
+
 export const ToDoList = ({ toDo, setToDo }) => {
+    const [TDs, setTDs] = useState([])
+    const { db } = useContext(Context)
+    const getData = async () => {
+        const q = query(collection(db, 'ToDos'))
+
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id
+        }));
+        setTDs(data)
+    }
+    useEffect(() => {
+        getData()
+    },)
+    // let [loading] = useCollectionData(
+    //     collection(db, 'ToDos')
+    // )
     const [edit, setEdit] = useState(null) // стейт режима редактирования
     const [value, setValue] = useState('') // стейт todo
     const [hValue, setHvalue] = useState('') //стейт заголовка todo
     const [timeValue, setTime] = useState('')// стейт времени выполнения
 
-    const saveEdited = (id) => {// сохранение изменений в state
+
+    function saveEdited(id) {// сохранение изменений в state
         let newTodo = [...toDo].map(item => {
             if (item.id == id) {
                 item.title = value
@@ -60,30 +53,32 @@ export const ToDoList = ({ toDo, setToDo }) => {
         setEdit(null)
     }
 
-    const editToDo = (id, title, deadline, header) => { // редактирование todo
+    function editToDo(id, title, deadline, header) { // редактирование todo
         setEdit(id)
         setValue(title)
         setTime(deadline)
         setHvalue(header)
     }
-    const deleteToDo = (id) => {//удаление todo
-        let newToDo = [...toDo].filter(item => item.id != id)
-        setToDo(newToDo)
+    async function deleteToDo(item) {//удаление todo
+        // let newToDo = [...toDo].filter(item => item.id != id)
+        // setToDo(newToDo)
+        await deleteDoc(doc(db, "ToDos", item.id));
     }
 
-    const done = (id) => { // changing status
-        let newToDo = [...toDo].filter(item => {
+    async function done(id) { // changing status
+        TDs = await TDs.map(item => {
             if (item.id == id) {
                 item.status = !item.status
             }
             return item
         })
-        setToDo(newToDo)
     }
 
+    // if (loading) return <div>wait..</div>
     return <Container>
-        {toDo.map(item => {
-            return <ToDoItem {...item} key={item.id}>
+        <AddToDo toDo={toDo} setToDo={setToDo} />
+        {TDs.map(item => {
+            return <ToDoItem {...item} key={item.id + 1}>
                 {
                     edit == item.id ? <div>
 
@@ -103,7 +98,7 @@ export const ToDoList = ({ toDo, setToDo }) => {
                 {edit == item.id ?
                     <BtnContainer><ActionBtn onClick={() => saveEdited(item.id)}>Save</ActionBtn></BtnContainer>
                     : < BtnContainer >
-                        <ActionBtn onClick={() => { deleteToDo(item.id) }}>Delete</ActionBtn>
+                        <ActionBtn onClick={() => { deleteToDo(item) }}>Delete</ActionBtn>
                         <ActionBtn onClick={() => { done(item.id) }}>
                             {item.status ? 'Undone' : 'Done'}
                         </ActionBtn>

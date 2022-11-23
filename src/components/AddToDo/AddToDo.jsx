@@ -1,29 +1,17 @@
 import { useState } from "react"
-import { ActionBtn } from "../ActionBtn"
+import { ActionBtn } from "../styled/ActionBtn"
 import styled from "styled-components"
-import { DateWithTime, TextArea } from "../TextArea"
+import { DateWithTime, TextArea } from "../styled/Inputs"
+import { Header, Form } from "../styled/Divs"
+import { useContext } from "react"
+import { Context } from "../.."
+import { collection, addDoc } from "firebase/firestore";
 
-const Form = styled.div`
-background:lightgrey;
-padding:10px;
-width: 420px;
-height: 110px;
-border-radius:10px;
-display:grid;
-grid-template-areas:
-'header question question'
-'main buttons buttons'
-;
-grid-gap:10px;
-margin:10px auto;
-`
-const Header = styled.div`
-font-size:24px;
-font-weight:500;
-text-align: left;
-grid-area:question;
 
-`
+
+
+
+
 const AddButton = styled(ActionBtn)`
 margin-right:100px;
 `
@@ -31,21 +19,23 @@ export const AddToDo = ({ toDo, setToDo }) => {
     const [value, setValue] = useState('')
     const [hValue, setHvalue] = useState('')
     const [timeValue, setTime] = useState('')
-    const addToDo = () => {
-        setToDo([
-            ...toDo,
-            {
-                id: toDo.length + 1,
+    const { db, ToDosCol } = useContext(Context)
+
+    const addToDo = async () => {
+        try {
+            const docRef = await addDoc(collection(db, "ToDos"), {
+                id: Math.random(),
                 title: value,
                 header: hValue,
                 status: false,
                 deadline: timeValue
-            },
-
-        ])
+            });
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
         setValue('')
         setHvalue('')
-        console.log(hValue)
     }
 
     return (
