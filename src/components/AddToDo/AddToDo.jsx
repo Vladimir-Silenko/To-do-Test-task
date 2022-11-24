@@ -27,7 +27,7 @@ export const AddToDo = ({ toDo, setToDo }) => {
                 id: Math.random(),
                 title: value,
                 header: hValue,
-                status: false,
+                stat: false,
                 deadline: timeValue
             });
             console.log("Document written with ID: ", docRef.id);

@@ -6,9 +6,8 @@ import { AddToDo } from "../AddToDo/AddToDo"
 import { ActionBtn } from "../styled/ActionBtn"
 import { ToDoItem, ToDoMain, Container, BtnContainer } from "../styled/Divs"
 import { TextArea, DateWithTime, } from "../styled/Inputs"
-import { collection, getDocs, doc, deleteDoc, query } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, query, updateDoc } from "firebase/firestore";
 import { Context } from "../.."
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useEffect } from "react"
 
 const Time = styled.span`
@@ -30,26 +29,19 @@ export const ToDoList = ({ toDo, setToDo }) => {
     }
     useEffect(() => {
         getData()
-    },)
-    // let [loading] = useCollectionData(
-    //     collection(db, 'ToDos')
-    // )
+    }, [TDs])
     const [edit, setEdit] = useState(null) // стейт режима редактирования
     const [value, setValue] = useState('') // стейт todo
     const [hValue, setHvalue] = useState('') //стейт заголовка todo
     const [timeValue, setTime] = useState('')// стейт времени выполнения
 
 
-    function saveEdited(id) {// сохранение изменений в state
-        let newTodo = [...toDo].map(item => {
-            if (item.id == id) {
-                item.title = value
-                item.header = hValue
-                item.deadline = +new Date(timeValue)
-            }
-            return item
+    async function saveEdited(item) {// сохранение изменений в state
+        await updateDoc(doc(db, "ToDos", item.id), {
+            title: value,
+            header: hValue,
+            deadline: +new Date(timeValue)
         })
-        setToDo(newTodo)
         setEdit(null)
     }
 
@@ -60,21 +52,15 @@ export const ToDoList = ({ toDo, setToDo }) => {
         setHvalue(header)
     }
     async function deleteToDo(item) {//удаление todo
-        // let newToDo = [...toDo].filter(item => item.id != id)
-        // setToDo(newToDo)
         await deleteDoc(doc(db, "ToDos", item.id));
     }
 
-    async function done(id) { // changing status
-        TDs = await TDs.map(item => {
-            if (item.id == id) {
-                item.status = !item.status
-            }
-            return item
+    async function done(item) { // changing status
+        await updateDoc(doc(db, "ToDos", item.id), {
+            stat: true
         })
     }
 
-    // if (loading) return <div>wait..</div>
     return <Container>
         <AddToDo toDo={toDo} setToDo={setToDo} />
         {TDs.map(item => {
@@ -96,10 +82,10 @@ export const ToDoList = ({ toDo, setToDo }) => {
                         </ToDoMain>
                 }
                 {edit == item.id ?
-                    <BtnContainer><ActionBtn onClick={() => saveEdited(item.id)}>Save</ActionBtn></BtnContainer>
+                    <BtnContainer><ActionBtn onClick={() => saveEdited(item)}>Save</ActionBtn></BtnContainer>
                     : < BtnContainer >
                         <ActionBtn onClick={() => { deleteToDo(item) }}>Delete</ActionBtn>
-                        <ActionBtn onClick={() => { done(item.id) }}>
+                        <ActionBtn onClick={() => { done(item) }}>
                             {item.status ? 'Undone' : 'Done'}
                         </ActionBtn>
                         <ActionBtn onClick={() => { editToDo(item.id, item.title, item.deadline, item.header) }}>Edit</ActionBtn>

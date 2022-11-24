@@ -4,7 +4,7 @@ export const ToDoItem = styled.div`
 width: 400px;
 height: 110px;
 padding:5px;
-background:${item => item.status ? 'rgb(188, 250, 185)' : 'lightgrey'};
+background:${item => item.stat ? 'rgb(188, 250, 185)' : 'lightgrey'};
 margin: 5px;
 border-radius:10px;
 display: grid;
