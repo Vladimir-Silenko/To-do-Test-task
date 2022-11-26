@@ -7,7 +7,9 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage'
 
-
+/**
+ * инициализация приложения в firebase
+ */
 const app = initializeApp({
   apiKey: "AIzaSyCJjbI3uFDhgSQsEsi9Xhhwft9OWWJ2sZA",
   authDomain: "react-todo-wu.firebaseapp.com",
@@ -18,17 +20,17 @@ const app = initializeApp({
   measurementId: "G-8LZW4EQE3S"
 })
 
-const db = getFirestore(app)
-const ToDosCol = collection(db, 'ToDos')
-const storage = getStorage(app)
-export const Context = createContext(null)
+const db = getFirestore(app) //здесь ссылка на firestore
+const ToDosCol = collection(db, 'ToDos') // здесь нужная нам коллекция
+const storage = getStorage(app)//здесь ссылка на хранилище
+export const Context = createContext(null) //создаем контекст, из которого потом будем доставать нужные константы
 getDocs(ToDosCol).then((snapshot) => console.log(snapshot.docs))
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Context.Provider value={{
     db,
     ToDosCol,
-    storage,
+    storage
   }}>
 
     <App />

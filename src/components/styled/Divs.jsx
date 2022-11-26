@@ -1,6 +1,10 @@
 import styled from "styled-components"
 // For List
-export const ToDoItem = styled.div`
+
+/**
+ * карточка записи
+ */
+export const ToDoItem = styled.div` 
 width: 400px;
 max-height: 140px;
 padding:5px;
@@ -16,6 +20,9 @@ grid-template-areas:
 'files  files'
 ;
 `
+/**
+ * область с основной информацией записи
+ */
 export const ToDoMain = styled.div`
 padding:10px;
 display:flex;
@@ -23,6 +30,9 @@ flex-direction: column;
 text-align:left;
 max-width:250px;
 `
+/**
+ * контейнер для карточек
+ */
 export const Container = styled.div`
 width:100%;
 display:flex;
@@ -30,7 +40,9 @@ flex-direction:column;
 align-items:center;
 padding-top:20px;
 `
-
+/**
+ * контейнер для кнопок
+ */
 export const BtnContainer = styled.div`
 max-height:110px;
     grid-area:buttons;
@@ -40,7 +52,9 @@ max-height:110px;
     justify-content:space-around;
 `
 // For AddToDo
-
+/**
+ * форма
+ */
 export const Form = styled.div`
 background:lightgrey;
 padding:10px;
@@ -55,6 +69,7 @@ grid-template-areas:
 grid-gap:10px;
 margin:10px auto;
 `
+
 export const Header = styled.div`
 font-size:24px;
 font-weight:500;

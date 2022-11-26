@@ -39,7 +39,7 @@ function App(props) {
   return (
     <div className="App">
       <Header />
-      <ToDoList toDo={ToDo} setToDo={setToDo} />
+      <ToDoList />
     </div>
   );
 }

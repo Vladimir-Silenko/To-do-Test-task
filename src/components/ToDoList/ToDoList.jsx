@@ -13,21 +13,27 @@ import { useEffect } from "react"
 const Time = styled.span`
 color:${item => item.deadline < Date.now() ? 'red' : 'BLUE'};
 `
-
-export const ToDoList = ({ toDo, setToDo }) => {
-    const [TDs, setTDs] = useState([])
-    const { db } = useContext(Context)
+/**
+ * 
+ * @returns список записей 
+ */
+export const ToDoList = () => {
+    const [TDs, setTDs] = useState([]) //стейт с данными с бэкэнда
+    const { db } = useContext(Context) //достаем из контекста переменную с ссылкой на хранилище
+    /**
+     * эта функция запрашивает данныt из firestore, и кладёт их в стейт
+     */
     const getData = async () => {
-        const q = query(collection(db, 'ToDos'))
+        const q = query(collection(db, 'ToDos')) // засовываем коллекцию в переменную
 
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(q) //получаем копию массива данных из коллекции
         const data = querySnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id
         }));
         setTDs(data)
     }
-    useEffect(() => {
+    useEffect(() => {//запрашиваем данные при изменении стейта
         getData()
     }, [TDs])
     const [edit, setEdit] = useState(null) // стейт режима редактирования
@@ -44,17 +50,31 @@ export const ToDoList = ({ toDo, setToDo }) => {
         })
         setEdit(null)
     }
-
-    function editToDo(id, title, deadline, header) { // редактирование todo
+    /**
+     * эта функция включает режим редактирования записи, 
+     * присваивая её id в стейт edit  
+     * @param {number} id 
+     * @param {string} title 
+     * @param {string} deadline 
+     * @param {string} header 
+     */
+    function editToDo(id, title, deadline, header) {
         setEdit(id)
         setValue(title)
         setTime(deadline)
         setHvalue(header)
     }
-    async function deleteToDo(item) {//удаление todo
+
+    /**
+     * эта функция удаляет запись
+     */
+    async function deleteToDo(item) {
         await deleteDoc(doc(db, "ToDos", item.id));
     }
 
+    /**
+     * эта функция меняет статус записи
+     */
     async function done(item) { // changing status
         await updateDoc(doc(db, "ToDos", item.id), {
             stat: true
@@ -62,15 +82,15 @@ export const ToDoList = ({ toDo, setToDo }) => {
     }
 
     return <Container>
-        <AddToDo toDo={toDo} setToDo={setToDo} />
+        <AddToDo />
         {TDs.map(item => {
             return <ToDoItem {...item} key={item.id + 1}>
-                {
+                {   //определяем что выводится на страницу, если edit равен/не равен 
                     edit == item.id ? <div>
 
-                        <TextArea value={hValue} onChange={(e) => setHvalue(e.target.value)} />
-                        <TextArea value={value} onChange={(e) => setValue(e.target.value)} />
-                        <DateWithTime value={timeValue} onChange={(e) => setTime(e.target.value)} type="datetime-local" />
+                        <TextArea value={hValue} onChange={(e) => setHvalue(e.target.value)} /> {/**поле ввода заголовка*/}
+                        <TextArea value={value} onChange={(e) => setValue(e.target.value)} /> {/**поле ввода основной информации */}
+                        <DateWithTime value={timeValue} onChange={(e) => setTime(e.target.value)} type="datetime-local" /> {/**поле ввода времени*/}
 
                     </div>
                         : <ToDoMain>
@@ -89,11 +109,11 @@ export const ToDoList = ({ toDo, setToDo }) => {
                 {edit == item.id ?
                     <BtnContainer><ActionBtn onClick={() => saveEdited(item)}>Save</ActionBtn></BtnContainer>
                     : < BtnContainer >
-                        <ActionBtn onClick={() => { deleteToDo(item) }}>Delete</ActionBtn>
+                        <ActionBtn onClick={() => { deleteToDo(item) }}>Delete</ActionBtn> {/** кнопка удаления */}
                         <ActionBtn onClick={() => { done(item) }}>
-                            {item.status ? 'Undone' : 'Done'}
+                            {item.status ? 'Undone' : 'Done'}   {/** кнопка изменения статуса */}
                         </ActionBtn>
-                        <ActionBtn onClick={() => { editToDo(item.id, item.title, item.deadline, item.header) }}>Edit</ActionBtn>
+                        <ActionBtn onClick={() => { editToDo(item.id, item.title, item.deadline, item.header) }}>Edit</ActionBtn> {/** кнопка входа в режим редактирования */}
                     </BtnContainer>
                 }
 

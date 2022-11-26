@@ -8,29 +8,29 @@ import { Context } from "../.."
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes } from 'firebase/storage'
 
-
-
-
-
-
 const AddButton = styled(ActionBtn)`
 margin-right:100px;
 `
-export const AddToDo = ({ toDo, setToDo }) => {
+// форма добавления записи
+export const AddToDo = () => {
     const [fileUpload, setFileUpload] = useState(null)
     const [value, setValue] = useState('')
     const [hValue, setHvalue] = useState('')
     const [timeValue, setTime] = useState('')
     const { db, storage } = useContext(Context)
-
+    /**
+     *  эта функция загружает файлы в хранилище
+     */
     const uploadFile = () => {
-        if (fileUpload == null) return
-        const fileRef = ref(storage, `files/${fileUpload.name}`)
+        if (fileUpload == null) return // если в стейте пусто, выходим из функции
+        const fileRef = ref(storage, `files/${fileUpload.name}`) //создаем ссылку на файл
         uploadBytes(fileRef, fileUpload).then(() => {
-            console.log('uploaded')
+            console.log('uploaded') //загружаем файлы в хранилище, и в случае успеха выводим оповещение в консоль
         })
     };
-
+    /**
+     * отправляем запись в firestore
+     */
     const addToDo = async () => {
         uploadFile()
         try {
