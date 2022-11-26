@@ -74,11 +74,16 @@ export const ToDoList = ({ toDo, setToDo }) => {
 
                     </div>
                         : <ToDoMain>
-                            <h3>{item.header}</h3>
-                            {item.title}
+                            <h3 style={{ gridArea: 'header', margin: '0' }}>{item.header}</h3>
+                            <p style={{ gridArea: 'main', margin: '0' }}>{item.title}</p>
                             <br />
+                            <div style={{ marginBottom: '10px' }}>
+                                <object data={item.files} style={{ gridArea: 'files', width: '30px' }}></object>
+                                <a style={{ gridArea: 'files', paddingLeft: '10px' }} href={item.files} target="_blank">show pinned files</a>
+                            </div>
+
                             {item.deadline < Date.now() ? <span style={{ color: 'red' }}>Outdated!!! </span> : ''}
-                            <Time {...item}>{dayjs(item.deadline).format('MMM DD ddd hh mm')}</Time>
+                            <Time  {...item}>{dayjs(item.deadline).format('MMM DD ddd hh mm')}</Time>
                         </ToDoMain>
                 }
                 {edit == item.id ?

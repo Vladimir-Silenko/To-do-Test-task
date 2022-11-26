@@ -2,21 +2,24 @@ import styled from "styled-components"
 // For List
 export const ToDoItem = styled.div`
 width: 400px;
-height: 110px;
+max-height: 140px;
 padding:5px;
 background:${item => item.stat ? 'rgb(188, 250, 185)' : 'lightgrey'};
 margin: 5px;
 border-radius:10px;
 display: grid;
-grid-template-rows: 1fr 1fr;
+grid-template-rows: 1fr 2fr 1fr;
 grid-template-columns: 3fr 1fr;
 grid-template-areas:
 'header  buttons'
-'main  buttons'
+'main  main'
+'files  files'
 ;
 `
 export const ToDoMain = styled.div`
 padding:10px;
+display:flex;
+flex-direction: column;
 text-align:left;
 max-width:250px;
 `
@@ -29,6 +32,7 @@ padding-top:20px;
 `
 
 export const BtnContainer = styled.div`
+max-height:110px;
     grid-area:buttons;
     display:flex;
     flex-direction:column;

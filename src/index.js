@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage'
 
 
 const app = initializeApp({
@@ -19,13 +20,15 @@ const app = initializeApp({
 
 const db = getFirestore(app)
 const ToDosCol = collection(db, 'ToDos')
+const storage = getStorage(app)
 export const Context = createContext(null)
 getDocs(ToDosCol).then((snapshot) => console.log(snapshot.docs))
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Context.Provider value={{
     db,
-    ToDosCol
+    ToDosCol,
+    storage,
   }}>
 
     <App />
